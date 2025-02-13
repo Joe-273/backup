@@ -1,0 +1,18 @@
+{
+	"name": "kaihopromise",
+	"type": "module",
+	"version": "1.0.0",
+	"description": "> 一个符合`Promise A+`规范的Promise Like",
+	"main": "index.js",
+	"scripts": {
+		"ts": "node --loader ts-node/esm src/index.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.7.2"
+	}
+}
