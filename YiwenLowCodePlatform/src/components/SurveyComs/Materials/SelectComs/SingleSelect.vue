@@ -1,0 +1,69 @@
+<template>
+  <div
+    :class="{
+      'text-center': computedState.position,
+    }"
+  >
+    <MaterialsHeader
+      :serialNum="serialNum"
+      :title="computedState.title"
+      :desc="computedState.desc"
+      :titleSize="computedState.titleSize"
+      :descSize="computedState.descSize"
+      :titleWeight="computedState.titleWeight"
+      :descWeight="computedState.descWeight"
+      :titleItalic="computedState.titleItalic"
+      :descItalic="computedState.descItalic"
+      :titleColor="computedState.titleColor"
+      :descColor="computedState.descColor"
+    />
+    <div class="radio-group">
+      <el-radio-group v-model="radioValue" @click.stop @change="emitAnswer">
+        <el-radio v-for="(item, index) in computedState.options" :value="index" :key="index">{{
+          item
+        }}</el-radio>
+      </el-radio-group>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import MaterialsHeader from '@/components/SurveyComs/Common/MaterialsHeader.vue'
+import type { OptionsStatus } from '@/types'
+import {
+  getTextStatus,
+  getStringStatus,
+  getCurrentStatus,
+  getStringStatusByCurrentStatus,
+} from '@/utils'
+const radioValue = ref('')
+const props = defineProps<{
+  serialNum: number
+  status: OptionsStatus
+}>()
+
+const computedState = computed(() => ({
+  title: getTextStatus(props.status.title),
+  desc: getTextStatus(props.status.desc),
+  options: getStringStatus(props.status.options),
+  position: getCurrentStatus(props.status.position),
+  titleSize: getStringStatusByCurrentStatus(props.status.titleSize),
+  descSize: getStringStatusByCurrentStatus(props.status.descSize),
+  titleWeight: getCurrentStatus(props.status.titleWeight),
+  descWeight: getCurrentStatus(props.status.descWeight),
+  titleItalic: getCurrentStatus(props.status.titleItalic),
+  descItalic: getCurrentStatus(props.status.descItalic),
+  titleColor: getTextStatus(props.status.titleColor),
+  descColor: getTextStatus(props.status.descColor),
+}))
+
+// 回头父组件需要传递一个updateAnswer过来
+// 通过触发父组件的这个自定义事件将答案传递给父组件
+const emits = defineEmits(['updateAnswer'])
+const emitAnswer = () => {
+  emits('updateAnswer', radioValue.value)
+}
+</script>
+
+<style scoped></style>
