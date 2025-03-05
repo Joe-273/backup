@@ -12,22 +12,16 @@
  * @return {TreeNode}
  */
 var lowestCommonAncestor = function(root, p, q) {
-	if (root === null) {
-		return null
-	}
 	// 后序遍历
-	if (root === p || root === q) {
-		return root
+	const recurse = (root) => {
+		if (root === null || root === p || root === q) {
+			return root
+		}
+		const l = recurse(root.left)
+		const r = recurse(root.right)
+		// 如果当前节点找到了p和q，说明当前节点为公共祖先
+		// 如果只找到p或者q
+		return l !== null && r !== null ? root : l ?? r
 	}
-
-	// 递归查找目标值
-	const l = lowestCommonAncestor(root.left, p, q)
-	const r = lowestCommonAncestor(root.right, p, q)
-
-	// 如果当前节点的子元素找到了l和r，那么当前节点就是最近祖先元素
-	if (l && r) {
-		return root
-	}
-	// 返回找到的节点
-	return l ?? r
-};
+	return recurse(root)
+}

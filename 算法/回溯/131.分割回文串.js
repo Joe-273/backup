@@ -3,51 +3,34 @@
  * @return {string[][]}
  */
 var partition = function(s) {
-	const ans = [], len = s.length
-	// 用于表示两个下标位置分割出来的子数组是否是回文串
-	const memo = new Array(len)
-	for (let i = 0; i < memo.length; i++) {
-		// false 表示不是回文串或者没有判断过
-		memo[i] = new Array(len).fill(false)
+	const ans = [], length = s.length
+	// 先动态规划，求出s各个区间是否是回文串
+	// dp[i][j]：以i开始，j结束的子串是否为回文串
+	const dp = Array.from({ length }, () => new Array(length).fill(false))
+	for (let i = length - 1; i >= 0; i--) {
+		for (let j = i; j < length; j++) {
+			if (s[i] === s[j]) {
+				dp[i][j] = (j - i <= 2) || dp[i + 1][j - 1]
+			}
+		}
 	}
-	backTracking([], 0)
+	// 回溯
+	backtracking(0, [])
 	return ans
 
-	function backTracking(path, startIdx) {
-		if (startIdx === len) {
-			ans.push(path.slice())
-			return
-		}
+	function backtracking(start, path) {
+		if (start === length) { return ans.push(Array.from(path)) }
 
-		for (let i = startIdx; i < len; i++) {
-			if (isPalindrome(startIdx, i)) {
-				// 剪枝，如果是回文串才进行递归
-				path.push(s.substring(startIdx, i + 1))
-				backTracking(path, i + 1)
-				// 回溯
+		for (let i = start; i < length; i++) {
+			// 是回文子串，则继续回溯
+			if (dp[start][i]) {
+				path.push(s.slice(start, i + 1))
+				backtracking(i + 1, path)
 				path.pop()
 			}
 		}
 	}
-	// 记忆化搜索法
-	function isPalindrome(l, r) {
-		if (l >= r || memo[l][r]) {
-			return true
-		}
-
-		let res
-		if (l < r && s[l] === s[r]) {
-			res = isPalindrome(l + 1, r - 1)
-		} else {
-			res = false
-		}
-
-		if (res) {
-			memo[l][r] = res
-		}
-		return res
-	}
 };
 
-const case1 = 'aabb'
+const case1 = 'abbab'
 console.log(partition(case1))

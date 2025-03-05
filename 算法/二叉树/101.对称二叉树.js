@@ -11,24 +11,40 @@
  * @return {boolean}
  */
 var isSymmetric = function(root) {
-	if (!root) {
-		return true
+	// 递归
+	// if (root === null) { return true }
+	// return compare(root.left, root.right)
+	// function compare(l, r) {
+	// 	if (l !== null && r === null) { return false }
+	// 	else if (l === null && r !== null) { return false }
+	// 	else if (l === null && r === null) { return true }
+	// 	else if (l.val !== r.val) { return false }
+	// 	const outside = compare(l.left, r.right)
+	// 	const inside = compare(l.right, r.left)
+	// 	return outside && inside
+	// }
+
+	// 迭代，队列
+	// if (root === null) { return true }
+	// const queue = [root.left, root.right]
+	// while (queue.length) {
+	// 	const l = queue.shift(), r = queue.shift()
+	// 	if (l === null && r === null) { continue }
+	// 	if (l === null || r === null || l.val !== r.val) { return false }
+	// 	queue.push(l.left, r.right)
+	// 	queue.push(l.right, r.left)
+	// }
+	// return true
+
+	// 迭代，栈
+	if (root === null) { return true }
+	const stack = [root.left, root.right]
+	while (stack.length) {
+		const l = stack.pop(), r = stack.pop()
+		if (l === null && r === null) { continue }
+		if (l === null || r === null || l.val !== r.val) { return false }
+		stack.push(l.right, r.left)
+		stack.push(l.left, r.right)
 	}
-	return compare(root.left, root.right)
+	return true
 };
-function compare(left, right) {
-	if (left === null && right !== null) {
-		return false
-	} else if (left !== null && right === null) {
-		return false
-	} else if (left === null && right === null) {
-		return true
-	} else if (left.val !== right.val) {
-		return false
-	} else {
-		// 左右要比较的节点相等
-		const outside = compare(left.left, right.right)
-		const inside = compare(left.right, right.left)
-		return outside && inside
-	}
-}

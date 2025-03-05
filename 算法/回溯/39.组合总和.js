@@ -4,25 +4,19 @@
  * @return {number[][]}
  */
 var combinationSum = function(candidates, target) {
+	candidates.sort((a, b) => a - b)
 	const ans = []
-	backTracking([], 0, 0)
+	backtracking(0, [], 0)
 	return ans
 
-	function backTracking(combine, sum, startIndex) {
-		if (sum > target) {
-			return
-		}
-		if (sum === target) {
-			ans.push(combine.slice())
-			return
-		}
-
-		// 为了避免重复的组合
-		// 使用第一层for循环的下标来控制startIndex
-		for (let i = startIndex; i < candidates.length; i++) {
-			combine.push(candidates[i])
-			backTracking(combine, sum + candidates[i], i)
-			combine.pop()
+	function backtracking(start, path, sum) {
+		if (sum === target) { return ans.push(Array.from(path)) }
+		for (let i = start; i < candidates.length; i++) {
+			const num = candidates[i]
+			if (num + sum > target) { return }
+			path.push(num)
+			backtracking(i, path, sum + num)
+			path.pop()
 		}
 	}
 };

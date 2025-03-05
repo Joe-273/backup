@@ -3,27 +3,23 @@
  * @return {number[][]}
  */
 var permute = function(nums) {
-	const ans = [], len = nums.length
-	backTracking([])
+	const ans = [], len = nums.length, set = new Set()
+	backtracking([])
 	return ans
 
-	function backTracking(path) {
-		if (path.length === len) {
-			ans.push([...path])
-			return
-		}
+	function backtracking(path) {
+		if (path.length === len) { return ans.push(Array.from(path)) }
 		for (let i = 0; i < len; i++) {
-			if (path.indexOf(nums[i]) === -1) {
-				// 如果path中不存在nums[i]
-				path.push(nums[i])
-				// 递归
-				backTracking(path)
-				// 回溯
-				path.pop()
+			const cur = nums[i]
+			if (!set.has(cur)) {
+				path.push(cur), set.add(cur)
+				backtracking(path)
+				path.pop(), set.delete(cur)
 			}
 		}
 	}
 };
 
 const case1 = [1, 2, 3]
-console.log(permute(case1))
+const case2 = [0, 1]
+console.log(permute(case2))

@@ -24,12 +24,34 @@ const case2 = createList([])
  * @return {ListNode}
  */
 var reverseList = function(head) {
-	if (head === null || head.next === null) {
-		return head
+	// 双指针法
+	// let pre = null, cur = head
+	// while (cur) {
+	// 	const next = cur.next
+	// 	cur.next = pre
+	// 	pre = cur
+	// 	cur = next
+	// }
+	// return pre
+
+	// 递归法1
+	return reverse(head, null)
+	function reverse(cur, pre) {
+		if (cur === null) {
+			return pre
+		}
+		const next = cur.next
+		cur.next = pre
+		return reverse(next, cur)
 	}
-	const newHead = reverseList(head.next)
-	head.next.next = head
-	head.next = null
-	return newHead
+
+	// 递归法2
+	// if (head === null || head.next === null) {
+	// 	return head
+	// }
+	// const newHead = reverseList(head.next)
+	// head.next.next = head
+	// head.next = null
+	// return newHead
 };
 console.log(reverseList(case1))

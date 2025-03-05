@@ -11,25 +11,18 @@
  * @return {boolean}
  */
 var isValidBST = function(root) {
+	// 二叉搜索树：中序遍历的结果从小到大排列
 	let preNode = null
-	return isValid(root)
+	return recurse(root)
 
-	function isValid(root) {
-		if (!root) {
-			return true
-		}
-
-		// 中序遍历
-		const left = isValid(root.left)
-
-		if (preNode !== null && preNode.val >= root.val) {
+	function recurse(root) {
+		if (root === null) { return true }
+		const l = recurse(root.left)
+		if (preNode !== null && root.val <= preNode.val) {
 			return false
 		}
 		preNode = root
-
-		const right = isValid(root.right)
-
-		return left && right
+		const r = recurse(root.right)
+		return l && r
 	}
-
 };

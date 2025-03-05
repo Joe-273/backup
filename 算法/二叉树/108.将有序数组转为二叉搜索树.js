@@ -11,19 +11,15 @@
  * @return {TreeNode}
  */
 var sortedArrayToBST = function(nums) {
-	return trans(nums, 0, nums.length - 1)
-
-	// 转换为二叉树的递归函数
-	function trans(nums, left, right) {
-		if (left > right) {
-			return null
-		}
-
-		const mid = Math.floor((left + right) / 2)
+	return recurse(0, nums.length - 1)
+	function recurse(l, r) {
+		// 数组升序排列，选中间的作为根节点
+		// 左边部分为左子树，右边部分为右子树
+		if (l > r) { return null }
+		const mid = (l + r) >> 1
 		const root = new TreeNode(nums[mid])
-		root.left = trans(nums, left, mid - 1)
-		root.right = trans(nums, mid + 1, right)
-
+		root.left = recurse(l, mid - 1)
+		root.right = recurse(mid + 1, r)
 		return root
 	}
 };

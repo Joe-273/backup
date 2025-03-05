@@ -14,21 +14,14 @@ var removeNthFromEnd = function(head, n) {
 	// 思路；定义快慢指针，先让快指针移动n步
 	// 然后快慢指针再同时移动，即可找到第前n个节点
 	// 为了方便处理删除头节点的操作，使用加入虚拟头节点的方式
-	const dummyHead = new ListNode()
-	dummyHead.next = head
-	let fast = dummyHead, slow = dummyHead
+	const dummy = new ListNode(0, head)
+	let s = dummy, f = dummy
 	for (let i = 0; i < n; i++) {
-		fast = fast.next
+		f = f.next
 	}
-
-	while (fast !== null) {
-		fast = fast?.next
-		if (fast === null) {
-			break
-		}
-		slow = slow?.next
+	while (f.next) {
+		f = f.next, s = s.next
 	}
-	slow.next = slow.next.next
-
-	return dummyHead.next
+	s.next = s.next.next
+	return dummy.next
 };
