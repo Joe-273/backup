@@ -1,5 +1,12 @@
-// 专门导出各种初始值
 export const genderStatus = () => ['男', '女', '保密']
+export const ageStatus = () => [
+  '18岁以下',
+  '25～30岁',
+  '31～40岁',
+  '41～50岁',
+  '51～60岁',
+  '61岁及以上',
+]
 
 export const educationStatus = () => [
   '初中及以下',

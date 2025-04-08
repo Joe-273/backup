@@ -1,6 +1,19 @@
-import { useMaterialStore } from '@/stores/useMaterial'
-import type { Material } from '@/types'
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
+import type { Material } from '@/types'
+import { useMaterialStore } from '@/stores/useMaterial'
+
+const modules = import.meta.glob('../views/**/*.vue', { eager: false })
+console.log(modules)
+
+const routs = Object.keys(modules).map((i) => {
+  let routePath = i
+    .replace('../views', '')
+    .replace(/\.vue$/, '')
+    .replace(/\/_/g, '/:')
+  const parts = routePath.split('/').filter(Boolean)
+  // console.log(parts)
+})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +21,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: HomeView,
     },
     {
       path: '/materials',
@@ -58,16 +71,39 @@ const router = createRouter({
           path: '/input-group',
           name: 'input-group',
           component: () => import('@/views/MaterialsView/InputGroupView.vue'),
+          redirect: '/text-input',
+          children: [
+            {
+              path: '/text-input',
+              name: 'text-input',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+          ],
         },
         {
           path: '/advanced-group',
           name: 'advanced-group',
           component: () => import('@/views/MaterialsView/AdvancedGroupView.vue'),
+          redirect: '/rate-score',
+          children: [
+            {
+              path: '/rate-score',
+              name: 'rate-score',
+              component: () =>
+                import('@/components/SurveyComs/Materials/AdvancedComs/RateScore.vue'),
+            },
+            {
+              path: '/date-time',
+              name: 'date-time',
+              component: () =>
+                import('@/components/SurveyComs/Materials/AdvancedComs/DateTime.vue'),
+            },
+          ],
         },
         {
           path: '/note-group',
           name: 'note-group',
-          component: () => import('@/views/MaterialsView/NoteGroupView.vue'),
+          component: () => import('@/views/MaterialsView/NoteGroup.vue'),
           redirect: '/text-note',
           children: [
             {
@@ -81,11 +117,33 @@ const router = createRouter({
           path: '/personal-info-group',
           name: 'personal-info-group',
           component: () => import('@/views/MaterialsView/PersonalInfoGroupView.vue'),
-          redirect: '/personal-info-gender',
+          redirect: '/personal-info-name',
           children: [
+            {
+              path: '/personal-info-name',
+              name: 'personal-info-name',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-id',
+              name: 'personal-info-id',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-birth',
+              name: 'personal-info-birth',
+              component: () =>
+                import('@/components/SurveyComs/Materials/AdvancedComs/DateTime.vue'),
+            },
             {
               path: '/personal-info-gender',
               name: 'personal-info-gender',
+              component: () =>
+                import('@/components/SurveyComs/Materials/SelectComs/SingleSelect.vue'),
+            },
+            {
+              path: '/personal-info-age',
+              name: 'personal-info-age',
               component: () =>
                 import('@/components/SurveyComs/Materials/SelectComs/SingleSelect.vue'),
             },
@@ -95,12 +153,71 @@ const router = createRouter({
               component: () =>
                 import('@/components/SurveyComs/Materials/SelectComs/SingleSelect.vue'),
             },
+            {
+              path: '/personal-info-collage',
+              name: 'personal-info-collage',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-major',
+              name: 'personal-info-major',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-industry',
+              name: 'personal-info-industry',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-career',
+              name: 'personal-info-career',
+              component: () =>
+                import('@/components/SurveyComs/Materials/SelectComs/SingleSelect.vue'),
+            },
+            {
+              path: '/personal-info-company',
+              name: 'personal-info-company',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-position',
+              name: 'personal-info-position',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
           ],
         },
         {
           path: '/contact-group',
           name: 'contact-group',
           component: () => import('@/views/MaterialsView/ContactGroupView.vue'),
+          redirect: '/personal-info-tel',
+          children: [
+            {
+              path: '/personal-info-tel',
+              name: 'personal-info-tel',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-wechat',
+              name: 'personal-info-wechat',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-qq',
+              name: 'personal-info-qq',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-email',
+              name: 'personal-info-email',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+            {
+              path: '/personal-info-address',
+              name: 'personal-info-address',
+              component: () => import('@/components/SurveyComs/Materials/InputComs/TextInput.vue'),
+            },
+          ],
         },
       ],
     },
@@ -122,7 +239,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/preview/:id(\\d+)',
+      path: '/preview/:id(\\d+)?',
       name: 'preview',
       component: () => import('@/views/Preview.vue'),
     },
@@ -134,7 +251,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const activeView = localStorage.getItem('activeView')
   const store = useMaterialStore()
   if (activeView === 'materials' && to.name) {
@@ -142,4 +259,5 @@ router.beforeEach((to, from, next) => {
   }
   next()
 })
+
 export default router

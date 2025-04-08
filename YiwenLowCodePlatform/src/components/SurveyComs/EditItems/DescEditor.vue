@@ -4,7 +4,7 @@
     <el-input
       :rows="5"
       type="textarea"
-      placeholder="请输入题目标题"
+      placeholder="请输入题目说明（选填）"
       v-model="text"
       @update:modelValue="inputHandle"
     />
@@ -12,8 +12,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
-import { type UpdateStatus, type VueComType } from '@/types'
+import type { VueComType } from '@/types'
+import { inject, ref } from 'vue'
+
+// 定义 props
 const props = defineProps<{
   status: string
   isShow: boolean
@@ -22,10 +24,18 @@ const props = defineProps<{
   id: string
 }>()
 
-const text = ref(props.status)
+// 定义类型
+import type { UpdateStatus } from '@/types'
+
+// 注入 updateStatus
 const updateStatus = inject<UpdateStatus>('updateStatus')
 
+// 定义响应式变量
+const text = ref(props.status)
+
+// 监听输入事件并更新状态
 function inputHandle(newVal: string) {
+  text.value = newVal // 更新绑定的值
   if (updateStatus) {
     updateStatus(props.configKey, newVal)
   }

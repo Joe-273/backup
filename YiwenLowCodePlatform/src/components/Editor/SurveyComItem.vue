@@ -2,32 +2,36 @@
   <div>
     <div
       class="survey-com-item-container pointer flex justify-content-center align-items-center self-center pl-10 pr-10 mb-10"
-      @click="addSurveyCom"
+      @click="addSurveyComItem"
     >
-      {{ item.comName }}
-      {{ item.matierialName }}
+      <div>{{ item?.comName }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defaultStatusMap } from '@/configs/defaultStatus/defaultStatusMap'
-import { useEditorStore } from '@/stores/useEditor'
-import type { Material } from '@/types'
-import { updateInitStatusBeforeAdd } from '@/utils'
+// EventBus
 import EventBus from '@/utils/eventBus'
-
+import type { PropType } from 'vue'
+import type { MaterialItem } from '@/types'
+import { defaultStatusMap } from '@/configs/defaultStatus/defaultStatusMap'
+// 仓库
+import { useEditorStore } from '@/stores/useEditor'
 const store = useEditorStore()
-const props = defineProps(['item'])
-const addSurveyCom = () => {
-  const newSurveyComName = props.item.materialName as Material
-  if (!newSurveyComName) {
+import { updateInitStatusBeforeAdd } from '@/utils'
+const props = defineProps({
+  item: Object as PropType<MaterialItem>,
+})
+
+const addSurveyComItem = () => {
+  const newMaterialName = props.item?.materialName
+  if (!newMaterialName) {
+    console.warn('newMaterialName is required')
     return
   }
-  // 创建一个业务组件的数据
-  const newSurveyComStatus = defaultStatusMap[newSurveyComName]()
-  updateInitStatusBeforeAdd(newSurveyComStatus, newSurveyComName)
-  store.addCom(newSurveyComStatus)
+  const status = defaultStatusMap[newMaterialName]()
+  updateInitStatusBeforeAdd(status, newMaterialName)
+  store.addCom(store.coms, status)
   EventBus.emit('scrollToBottom')
 }
 </script>

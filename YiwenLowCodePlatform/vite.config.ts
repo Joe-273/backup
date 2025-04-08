@@ -13,6 +13,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    modulePreload: {
+      polyfill: true,
+    },
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3000',

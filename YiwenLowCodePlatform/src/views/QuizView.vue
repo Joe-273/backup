@@ -18,61 +18,63 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from 'vue'
 import { onMounted, ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useRoute } from 'vue-router'
-const route = useRoute()
-
+import type { Ref } from 'vue'
 import type { QuizData } from '@/types'
-
+// 工具
 import { restoreComponentStatus } from '@/utils'
 // 组合式函数
 import { useSurveyNo } from '@/utils/hooks'
-// 获取题目编号
-const serialNum = computed(() => useSurveyNo(quizData.value?.coms).value)
+// 引入 ElementPlus 库
+import { ElMessage } from 'element-plus'
+// 路由
+import { useRoute } from 'vue-router'
+const route = useRoute()
 
 const quizData = ref<QuizData>({
   coms: [],
   surveyCount: 0,
 })
-
+// 用于存储所有问题的答案
+const answers: Ref<{ [key: number]: string | number | Date }> = ref({})
+// 获取题目编号
+const serialNum = computed(() => useSurveyNo(quizData.value?.coms).value)
 onMounted(async () => {
   const quizId = route.params.id
-  // 从服务器获取试卷内容
+  // 从服务器获取试卷信息
   const response = await fetch(`/api/getQuiz/${quizId}`)
   const data = await response.json()
   data.coms = JSON.parse(data.coms)
   restoreComponentStatus(data.coms)
+  // 拿到试题数据
   quizData.value = data
 })
 
-// 用来存储要发送服务器的答案
-const answers: Ref<{ [key: number]: string | number | Date }> = ref({})
-
-const updateAnswer = (index: number, answer: string | number) => {
-  // console.log(index, answer);
+const updateAnswer = (index: number, answer: string | number | Date) => {
+  // index是题目本来的索引，通过serialNum.value[index]获取显示的题目索引
+  // 检查 serialNum.value[index] 是否为 null
   const serial = serialNum.value[index]
   if (serial !== null) {
-    // 说明是题目组件
     answers.value[serial] = answer
+  } else {
+    // 处理 serialNum.value[index] 为 null 的情况
+    console.error(`The serial number at index ${index} is null.`)
   }
-  console.log(answers.value)
 }
 
 const submitAnswers = async () => {
   const quizId = route.params.id
-  await fetch(`/api/submitAnswers`, {
+  await fetch('/api/submitAnswers', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      quizId,
-      answers: answers.value,
-    }),
+    body: JSON.stringify({ quizId, answers: answers.value }),
   })
-  ElMessage.success('提交成功！')
+  ElMessage({
+    message: '答案已提交',
+    type: 'success',
+  })
 }
 </script>
 

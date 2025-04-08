@@ -1,5 +1,4 @@
 import type { Status } from './common'
-
 export interface SurveyDBData {
   createDate: number
   updateDate: number

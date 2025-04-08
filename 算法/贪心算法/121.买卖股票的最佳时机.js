@@ -3,12 +3,14 @@
  * @return {number}
  */
 var maxProfit = function(prices) {
-	// 贪心算法
-	let minPrice = prices[0], ans = 0
-	for (let i = 1; i < prices.length; i++) {
-		const curPrice = prices[i]
-		ans = Math.max(ans, curPrice - minPrice)
-		minPrice = Math.min(minPrice, curPrice)
+	// 一次遍历
+	let ans = 0, minPrice = prices[0]
+	for (let i = 0; i < prices.length; i++) {
+		if (prices[i] < minPrice) {
+			minPrice = prices[i]
+			continue
+		}
+		ans = ans > prices[i] - minPrice ? ans : prices[i] - minPrice
 	}
 	return ans
 };

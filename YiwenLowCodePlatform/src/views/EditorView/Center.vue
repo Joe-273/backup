@@ -9,15 +9,9 @@
           }"
           @click="clickHandle(index)"
           :key="element.id"
-          :ref="(el) => (componentsRefs[index] = el)"
+          :ref="(el) => (componentRefs[index] = el)"
         >
-          <component
-            :is="element.type"
-            :id="element.id"
-            :status="element.status"
-            :serialNum="serialNum[index]"
-          />
-          <!-- 删除按钮 -->
+          <component :is="element.type" :status="element.status" :serialNum="serialNum[index]" />
           <div class="absolute delete-btn" v-show="store.currentComponentIndex === index">
             <el-button
               type="danger"
@@ -35,66 +29,57 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, computed, type ComponentPublicInstance } from 'vue'
-import { useEditorStore } from '@/stores/useEditor'
+import { ref, nextTick, computed } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { Close } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 // 拖动组件
 import draggable from 'vuedraggable'
-const store = useEditorStore()
-// 事件总监
+// EventBus
 import EventBus from '@/utils/eventBus'
+// 仓库
+import { useEditorStore } from '@/stores/useEditor'
+const store = useEditorStore()
+
 // 组合式函数
 import { useSurveyNo } from '@/utils/hooks'
-
 // 获取题目编号
 const serialNum = computed(() => useSurveyNo(store.coms).value)
 
-const centerContainer = ref<HTMLElement | null>(null)
-const componentsRefs = ref<(Element | ComponentPublicInstance | null)[]>([])
-
-const scrollToBottom = () => {
+const centerContainer = ref<HTMLElement | null>(null) // 明确声明类型
+const componentRefs = ref<(Element | ComponentPublicInstance | null)[]>([])
+const clickHandle = function (index: number) {
+  if (store.currentComponentIndex === index) {
+    store.setCurrentComponentIndex(-1)
+  } else {
+    store.setCurrentComponentIndex(index)
+    scrollToCenter(index)
+  }
+}
+const scrollToBottom = function () {
   nextTick(() => {
-    const container = centerContainer.value // 获取容器的dom元素
+    const container = centerContainer.value
     if (container) {
-      container.scrollTo({
+      window.scrollTo({
         top: container.scrollHeight,
         behavior: 'smooth',
       })
     }
   })
 }
-const scrollToCenter = (index: number) => {
+const scrollToCenter = function (index: number) {
   nextTick(() => {
-    const element = componentsRefs.value[index] // 获取当前题目的dom元素
-    // 判断当前元素是否是HTMLElement
+    const element = componentRefs.value[index]
     if (element instanceof HTMLElement) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      })
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   })
 }
-
-// 通过事件总线提供滚动方法给外部调用
 EventBus.on('scrollToBottom', scrollToBottom)
 EventBus.on('scrollToCenter', scrollToCenter)
 
-const clickHandle = (index: number) => {
-  if (store.currentComponentIndex === index) {
-    store.setCurrentComponentIndex(-1)
-  } else {
-    store.setCurrentComponentIndex(index)
-  }
-}
-
-const dragstart = () => {
-  store.setCurrentComponentIndex(-1)
-}
-// 删除选中的组件
-const removeCom = (index: number) => {
-  ElMessageBox.confirm('确定删除该组件吗？', '提示', {
+function removeCom(index: number) {
+  ElMessageBox.confirm('是否确定删除此模块？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
@@ -102,29 +87,39 @@ const removeCom = (index: number) => {
     .then(() => {
       store.removeCom(index)
       store.setCurrentComponentIndex(-1)
-      ElMessage.success('删除成功')
+      ElMessage({
+        type: 'success',
+        message: '已删除',
+      })
     })
     .catch(() => {
-      ElMessage.info('已取消删除')
+      console.log('取消删除')
     })
+}
+// 拖动开始
+function dragstart() {
+  // 拖动开始的时候，将当前选中的组件取消选中
+  store.setCurrentComponentIndex(-1)
 }
 </script>
 
 <style scoped>
 .center-container {
+  width: 50%;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
   margin: 70px auto;
   padding: 20px;
   background: var(--white);
+  position: relative;
   .content {
     cursor: pointer;
     padding: 10px;
     background-color: var(--white);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-sm);
     &:hover {
       transform: scale(1.01);
-      transition: 0.25s;
+      transition: 0.5s;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
   }
